@@ -1,5 +1,3 @@
 Rails.application.routes.draw do
-
-  resources :tasks
-
+  resources :tasks, except: %i[edit new]
 end
