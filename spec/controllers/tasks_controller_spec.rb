@@ -15,12 +15,8 @@ RSpec.describe TasksController, type: :controller do
     context 'with valid id' do
       subject { get :show, params: { id: task.id } }
 
+      it { is_expected.to serialize_object(task).with(TaskSerializer) }
       it { is_expected.to have_http_status(:ok) }
-      context 'responced task' do
-        before { subject }
-
-        it { expect(json["id"]).to eq(task.id) }
-      end
     end
 
     context 'with invalid id' do
