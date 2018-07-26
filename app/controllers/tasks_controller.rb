@@ -11,23 +11,28 @@ class TasksController < ApplicationController
     task = new_task
     if task.save
       render json: { status: :created, data: task }
+      head :created
     else
       render json: { status: :unprocessable_entity, message: task.errors.full_messages }
+      head :unprocessable_entity
     end
   end
 
   def destroy
     task = get_task
     task.destroy
-    render json: { status: :ok, data: task }
+    render json: { status: :accepted, data: task }
+    head :accepted
   end
 
   def update
     task = get_task
     if task.update_attributes(task_params)
       render json: { status: :accepted, data: task }
+      head :accepted
     else
       render json: { status: :unprocessable_entity, message: task.errors.full_messages }
+      head :unprocessable_entity
     end
   end
 
