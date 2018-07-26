@@ -2,29 +2,26 @@ require 'rails_helper'
 
 RSpec.describe TasksController, type: :controller do
   let!(:task) { Task.create(name: 'test_name', description: 'test_description') }
-  let(:get_all_tasks) { Task.all }
+  let(:tasks) { Task.all }
+  let(:responsed_json) { JSON.parse(response.body) }
 
   describe "GET #index" do
-    before { get :index }
+    subject { get :index }
 
-    it {expect(response).to have_http_status(:ok)}
+    it { is_expected.to have_http_status(:ok) }
   end
 
   describe "GET #show" do
     before { get :show, params: { id: task.id } }
 
-    it 'resposed right task' do
-      json = JSON.parse(response.body)
-      expect(json["data"]["id"]).to eq(task.id)
-    end
-
+    it { expect(responsed_json["id"]).to eq(task.id) }
     it { expect(response).to have_http_status :ok }
   end
 
   describe 'DELETE #destroy' do
     before { delete :destroy, params: { id: task.id } }
 
-    it { expect(get_all_tasks.count).to eq(0) }
+    it { expect(tasks.count).to eq(0) }
     it { expect(response).to have_http_status :accepted }
   end
 
@@ -33,7 +30,7 @@ RSpec.describe TasksController, type: :controller do
       before { patch :update, params: { id: task.id , task: { name: 'test2', description: 'test2' } } }
 
       it { expect(response).to have_http_status :accepted }
-      # it { expect(task.name).to eq 'test2' } # ask
+      it { expect(task.reload.name).to eq 'test2' } # ask
     end
 
     context 'with incorect params' do
@@ -53,8 +50,7 @@ RSpec.describe TasksController, type: :controller do
     context 'with incorect params' do
       before { post :create, params: { task: { name: '', description: '' } } }
 
-      it { expect(response).to have_http_status :unprocessable_entity }
+      it { expect(response).to have_http_status(:unprocessable_entity) }
     end
   end
-
 end
