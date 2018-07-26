@@ -16,7 +16,11 @@ RSpec.describe TasksController, type: :controller do
       subject { get :show, params: { id: task.id } }
 
       it { is_expected.to have_http_status(:ok) }
-      it { subject; expect(json["id"]).to eq(task.id) }
+      context 'responced task' do
+        before { subject }
+
+        it { expect(json["id"]).to eq(task.id) }
+      end
     end
 
     context 'with invalid id' do
@@ -30,7 +34,7 @@ RSpec.describe TasksController, type: :controller do
     subject { delete :destroy, params: { id: task.id } }
 
     it { is_expected.to have_http_status(:accepted) }
-    it { subject; expect(controller.tasks.count).to eq(0) }
+    it { expect { delete :destroy, params: { id: task.id } }.to change(Task, :count).by(-1) }
   end
 
   describe '#update' do
