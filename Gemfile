@@ -9,9 +9,11 @@ gem 'puma', '~> 3.11'
 gem 'active_model_serializers'
 gem 'bootsnap', '>= 1.1.0', require: false
 gem 'rack-cors'
+gem 'decent_exposure'
 
 group :development, :test do
   gem 'byebug', platforms: [:mri, :mingw, :x64_mingw]
+  gem 'pry'
   gem 'rspec'
   gem 'rspec-rails'
   gem 'pry'
