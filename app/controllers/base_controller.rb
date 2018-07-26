@@ -1,4 +1,4 @@
-class BaseController < ApplicationController
+class BaseController < ApiController
 
   rescue_from ActiveRecord::RecordNotFound do |_e|
     render json: { message: '404 not found' }, status: :not_found
