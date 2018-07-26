@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :task do
-    name 'test_name'
-    description 'test_description'
+    name Faker::Name.name
+    description Faker::Lorem.sentence
   end
 end

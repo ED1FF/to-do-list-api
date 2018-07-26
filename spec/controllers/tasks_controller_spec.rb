@@ -2,11 +2,8 @@ require 'rails_helper'
 
 RSpec.describe TasksController, type: :controller do
   let!(:task) { create(:task) }
-  let(:responsed_json) { JSON.parse(response.body) }
-  let(:valid_params) { { name: 'test2', description: 'test2' } }
+  let(:valid_params) { attributes_for(:task) }
   let(:invalid_params) { { name: '', description: '' } }
-  let(:random_id) { Random.new.rand(0...task.id) }
-
 
   describe "#index" do
     subject { get :index }
@@ -19,20 +16,20 @@ RSpec.describe TasksController, type: :controller do
       subject { get :show, params: { id: task.id } }
 
       it { is_expected.to have_http_status(:ok) }
-      it { subject; expect(responsed_json["id"]).to eq(task.id) }
+      it { subject; expect(json["id"]).to eq(task.id) }
     end
 
     context 'with invalid id' do
-      subject { get :show, params: { id: random_id } }
+      subject { get :show, params: { id: rand(1000) } }
 
-      it { is_expected.to have_http_status :not_found }
+      it { is_expected.to have_http_status(:not_found) }
     end
   end
 
   describe '#destroy' do
     subject { delete :destroy, params: { id: task.id } }
 
-    it { is_expected.to have_http_status :accepted }
+    it { is_expected.to have_http_status(:accepted) }
     it { subject; expect(controller.tasks.count).to eq(0) }
   end
 
@@ -40,14 +37,21 @@ RSpec.describe TasksController, type: :controller do
     context 'with incorect params' do
       subject { patch :update, params: { id: task.id , task: valid_params } }
 
-      it { is_expected.to have_http_status :accepted }
-      it { subject; expect(task.reload.name).to eq 'test2' }
+      it { is_expected.to have_http_status(:accepted) }
+      context 'update columns' do
+        before do
+          subject
+          task.reload
+        end
+
+        it { expect(task.name).to eq(valid_params[:name])  }
+      end
     end
 
     context 'with incorect params' do
       subject { patch :update, params: { id: task.id , task: invalid_params } }
 
-      it { is_expected.to have_http_status :unprocessable_entity }
+      it { is_expected.to have_http_status(:unprocessable_entity) }
     end
   end
 
@@ -55,13 +59,13 @@ RSpec.describe TasksController, type: :controller do
     context 'with incorect params' do
       subject { post :create, params: { task: valid_params } }
 
-      it { is_expected.to have_http_status :created }
+      it { is_expected.to have_http_status(:created) }
     end
 
     context 'with incorect params' do
       subject { post :create, params: { task: invalid_params } }
 
-      it { is_expected.to have_http_status :unprocessable_entity }
+      it { is_expected.to have_http_status(:unprocessable_entity) }
     end
   end
 end
