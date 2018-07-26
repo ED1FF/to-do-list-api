@@ -1,56 +1,75 @@
 require 'rails_helper'
 
 RSpec.describe TasksController, type: :controller do
-  let!(:task) { Task.create(name: 'test_name', description: 'test_description') }
-  let(:tasks) { Task.all }
-  let(:responsed_json) { JSON.parse(response.body) }
+  let!(:task) { create(:task) }
+  let(:valid_params) { attributes_for(:task) }
+  let(:invalid_params) { { name: '', description: '' } }
 
-  describe "GET #index" do
+  describe "#index" do
     subject { get :index }
 
     it { is_expected.to have_http_status(:ok) }
   end
 
-  describe "GET #show" do
-    before { get :show, params: { id: task.id } }
+  describe "#show" do
+    context 'with valid id' do
+      subject { get :show, params: { id: task.id } }
 
-    it { expect(responsed_json["id"]).to eq(task.id) }
-    it { expect(response).to have_http_status :ok }
-  end
+      it { is_expected.to have_http_status(:ok) }
+      context 'responced task' do
+        before { subject }
 
-  describe 'DELETE #destroy' do
-    before { delete :destroy, params: { id: task.id } }
-
-    it { expect(tasks.count).to eq(0) }
-    it { expect(response).to have_http_status :accepted }
-  end
-
-  describe 'PATCH #update' do
-    context 'with incorect params' do
-      before { patch :update, params: { id: task.id , task: { name: 'test2', description: 'test2' } } }
-
-      it { expect(response).to have_http_status :accepted }
-      it { expect(task.reload.name).to eq 'test2' } # ask
+        it { expect(json["id"]).to eq(task.id) }
+      end
     end
 
-    context 'with incorect params' do
-      before { patch :update, params: { id: task.id , task: { name: '', description: '' } } }
+    context 'with invalid id' do
+      subject { get :show, params: { id: rand(1000) } }
 
-      it { expect(response).to have_http_status :unprocessable_entity }
+      it { is_expected.to have_http_status(:not_found) }
     end
   end
 
-  describe 'POST #create' do
-    context 'with incorect params' do
-      before { post :create, params: { task: { name: 'test2', description: 'test2' } } }
+  describe '#destroy' do
+    subject { delete :destroy, params: { id: task.id } }
 
-      it { expect(response).to have_http_status :created }
+    it { is_expected.to have_http_status(:accepted) }
+    it { expect { delete :destroy, params: { id: task.id } }.to change(Task, :count).by(-1) }
+  end
+
+  describe '#update' do
+    context 'with incorect params' do
+      subject { patch :update, params: { id: task.id , task: valid_params } }
+
+      it { is_expected.to have_http_status(:accepted) }
+      context 'update columns' do
+        before do
+          subject
+          task.reload
+        end
+
+        it { expect(task.name).to eq(valid_params[:name])  }
+      end
     end
 
     context 'with incorect params' do
-      before { post :create, params: { task: { name: '', description: '' } } }
+      subject { patch :update, params: { id: task.id , task: invalid_params } }
 
-      it { expect(response).to have_http_status(:unprocessable_entity) }
+      it { is_expected.to have_http_status(:unprocessable_entity) }
+    end
+  end
+
+  describe '#create' do
+    context 'with incorect params' do
+      subject { post :create, params: { task: valid_params } }
+
+      it { is_expected.to have_http_status(:created) }
+    end
+
+    context 'with incorect params' do
+      subject { post :create, params: { task: invalid_params } }
+
+      it { is_expected.to have_http_status(:unprocessable_entity) }
     end
   end
 end
