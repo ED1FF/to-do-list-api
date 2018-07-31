@@ -10,7 +10,7 @@ class ApplicationController < ActionController::Base
 
   def current_user
     token = request.headers['Authorization'].to_s.split(' ').last
-    User.find_by_token(token) if token
+    User.find_by_auth_token(token) if token
   end
 
   def unauthorized!
