@@ -1,6 +1,9 @@
 class BaseController < ApiController
   before_action :authenticate_user!
 
+  expose :token, -> { request.headers['Authorization'].to_s.split(' ').last }
+  expose :current_user, -> { User.find_by_auth_token(token) }
+
   rescue_from ActiveRecord::RecordNotFound do |_e|
     render json: { message: '404 not found' }, status: :not_found
   end
@@ -18,11 +21,6 @@ class BaseController < ApiController
 
   def authenticate_user!
     unauthorized! unless current_user
-  end
-
-  def current_user
-    token = request.headers['Authorization'].to_s.split(' ').last
-    User.find_by_auth_token(token) if token
   end
 
   def unauthorized!
