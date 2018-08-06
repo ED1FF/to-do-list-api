@@ -4,6 +4,7 @@ class BulkTasksController < BaseController
   def destroy
     tasks.destroy_all
     render_api(tasks, :no_content)
+
   end
 
   def update
@@ -16,4 +17,5 @@ class BulkTasksController < BaseController
   def update_params
     params.permit(:done)
   end
+  
 end
