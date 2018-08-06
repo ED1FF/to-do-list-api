@@ -1,9 +1,10 @@
 class BulkTasksController < BaseController
-  expose :tasks, -> { current_user.tasks.where(ids) }
+  expose :tasks, -> { current_user.tasks.where(id: params[:id]) }
 
   def destroy
     tasks.destroy_all
-    render_api(tasks, :accepted)
+    render_api(tasks, :no_content)
+
   end
 
   def update
@@ -16,8 +17,5 @@ class BulkTasksController < BaseController
   def update_params
     params.permit(:done)
   end
-
-  def ids
-    params.permit(id: [])
-  end
+  
 end
