@@ -33,7 +33,7 @@ ActiveRecord::Schema.define(version: 2018_08_08_071909) do
     t.string "city"
     t.string "address"
     t.integer "zip"
-    t.integer "user_id"
+    t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_addresses_on_user_id"
