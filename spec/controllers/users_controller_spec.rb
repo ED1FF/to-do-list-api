@@ -1,8 +1,10 @@
 require 'rails_helper'
 
 RSpec.describe UsersController, type: :controller do
-  let!(:correct_params) { { user: { email: 'test@test.test', password: '123321123321', password_confirmation: '123321123321' } } }
+  let!(:correct_params) { { user: { email: Faker::Internet.email, password: '123321123321', password_confirmation: '123321123321' } } }
+  let(:addresses_attributes) { attributes_for(:address) }
   let!(:incorrect_params) { { user: { email: '', password: '', password_confirmation: '' } } }
+  let!(:user_params_with_address) { { user: { email: Faker::Internet.email, password: '123321123321', password_confirmation: '123321123321',addresses_attributes: [addresses_attributes] } } }
   describe '#create' do
     context 'with correct credentials' do
       subject { post :create, params: correct_params }
@@ -11,6 +13,11 @@ RSpec.describe UsersController, type: :controller do
     context 'with incorect credentials' do
       subject { post :create, params: incorrect_params }
       it { is_expected.to have_http_status(:unprocessable_entity) }
+    end
+    context 'with address' do
+      subject { post :create, params: user_params_with_address }
+      it { is_expected.to have_http_status(:created) }
+      it { expect { post :create, params: user_params_with_address }.to change(Address, :count).by(1) }
     end
   end
 end
