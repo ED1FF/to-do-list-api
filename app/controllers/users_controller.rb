@@ -2,17 +2,17 @@ class UsersController < ApplicationController
   expose :user
 
   def show
-    render_api(user)
+    render_api(current_user)
   end
 
   def create
-    return render json: { token: user.auth_token }, status: :created if user.save
-    render json: { errors: user.errors.messages }, status: :unprocessable_entity
+    user.save
+    render_api({token: user.auth_token}.compact, :created)
   end
 
   def update
-    user.update(user_params)
-    render_api(user, :accepted)
+    current_user.update(user_params)
+    render_api(current_user, :accepted)
   end
 
   private

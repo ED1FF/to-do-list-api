@@ -1,5 +1,5 @@
 class BaseController < ApiController
-  include RenderTable
+  include Renderable
   before_action :authenticate_user!
 
   expose :token, -> { request.headers['Authorization'].to_s.split(' ').last }
