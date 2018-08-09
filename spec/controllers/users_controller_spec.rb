@@ -1,6 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe UsersController, type: :controller do
+  let(:user) { create(:user) }
   let!(:correct_params) { { user: { email: Faker::Internet.email, password: '123321123321', password_confirmation: '123321123321' } } }
   let(:addresses_attributes) { attributes_for(:address) }
   let!(:incorrect_params) { { user: { email: '', password: '', password_confirmation: '' } } }
