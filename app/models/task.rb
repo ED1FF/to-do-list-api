@@ -1,5 +1,7 @@
 class Task < ApplicationRecord
-  validates_presence_of :name
+  has_many :comments, as: :commentable, dependent: :destroy
+  accepts_nested_attributes_for :comments, allow_destroy: true
+
+  validates :name, presence: true
   validates_presence_of :description
-  has_many :comments, as: :commentable
 end

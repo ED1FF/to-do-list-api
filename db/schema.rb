@@ -42,7 +42,7 @@ ActiveRecord::Schema.define(version: 2018_08_10_111900) do
   create_table "comments", force: :cascade do |t|
     t.string "text"
     t.string "commentable_type"
-    t.integer "commentable_id"
+    t.bigint "commentable_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["commentable_type", "commentable_id"], name: "index_comments_on_commentable_type_and_commentable_id"
