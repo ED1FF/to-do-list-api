@@ -1,4 +1,5 @@
 class BaseController < ApiController
+  include Renderable
   before_action :authenticate_user!
 
   expose :token, -> { request.headers['Authorization'].to_s.split(' ').last }
@@ -9,15 +10,6 @@ class BaseController < ApiController
   end
 
   private
-
-  def render_api(object, status = :ok)
-    if object.respond_to?(:errors) && object.errors.present?
-      render json: { error: { status: 422, message: object.errors.full_messages.to_sentence,
-                              errors: object.errors } }, status: 422
-    else
-      render json: object, status: status
-    end
-  end
 
   def authenticate_user!
     unauthorized! unless current_user

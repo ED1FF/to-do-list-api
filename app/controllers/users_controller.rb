@@ -1,14 +1,23 @@
 class UsersController < ApplicationController
   expose :user
 
+  def show
+    render_api(current_user)
+  end
+
   def create
-    return render json: { token: user.auth_token }, status: :created if user.save
-    render json: { status: :error, errors: user.errors.messages }, status: :unprocessable_entity
+    user.save
+    render_api({token: user.auth_token}.compact, :created)
+  end
+
+  def update
+    current_user.update(user_params)
+    render_api(current_user, :accepted)
   end
 
   private
 
   def user_params
-    params.require(:user).permit(:email, :token, :password, :password_confirmation, addresses_attributes: %i[city address zip])
+    params.require(:user).permit(:email, :token, :password, :password_confirmation, addresses_attributes: %i[id city address zip _destroy])
   end
 end
