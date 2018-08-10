@@ -1,8 +1,9 @@
-FactoryBot.define do
+ FactoryBot.define do
   factory :user do
     email { Faker::Internet.email }
     password '123321123321'
     password_confirmation '123321123321'
+    type 'Member'
     factory :user_with_tasks do
       transient do
         tasks_count 5
